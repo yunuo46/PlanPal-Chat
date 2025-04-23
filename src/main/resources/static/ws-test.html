@@ -1,0 +1,31 @@
+<!-- ws-test.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>WebSocket Test</title></head>
+<body>
+<input id="msg" type="text" placeholder="Message">
+<button onclick="sendMsg()">Send</button>
+<ul id="log"></ul>
+
+<script>
+    const socket = new WebSocket("ws://localhost:8080/ws/chat?roomId=testRoom&userId=yunuo");
+
+    socket.onopen = () => log("✅ Connected");
+    socket.onmessage = (event) => log("📩 " + event.data);
+    socket.onerror = (err) => log("❌ Error: " + err);
+    socket.onclose = () => log("🔌 Closed");
+
+    function sendMsg() {
+        const msg = document.getElementById("msg").value;
+        socket.send(msg);
+        log("📤 " + msg);
+    }
+
+    function log(message) {
+        const li = document.createElement("li");
+        li.textContent = message;
+        document.getElementById("log").appendChild(li);
+    }
+</script>
+</body>
+</html>
