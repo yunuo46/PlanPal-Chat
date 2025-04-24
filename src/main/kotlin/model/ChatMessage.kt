@@ -1,4 +1,4 @@
-package com.gpg.model
+package com.gdg.model
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document

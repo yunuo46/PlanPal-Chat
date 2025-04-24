@@ -1,6 +1,6 @@
-package com.gpg.config
+package com.gdg.config
 
-import com.gpg.handler.ChatWebSocketHandler
+import com.gdg.handler.ChatWebSocketHandler
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.socket.config.annotation.EnableWebSocket
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer

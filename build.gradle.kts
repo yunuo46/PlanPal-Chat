@@ -8,7 +8,7 @@ plugins {
     kotlin("plugin.spring") version "2.1.10"
 }
 
-group = "com.gpg"
+group = "com.gdg"
 version = "1.0-SNAPSHOT"
 
 repositories {

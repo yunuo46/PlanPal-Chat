@@ -1,7 +1,7 @@
-package com.gpg.handler
+package com.gdg.handler
 
-import com.gpg.model.ChatMessage
-import com.gpg.service.ChatService
+import com.gdg.model.ChatMessage
+import com.gdg.service.ChatService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

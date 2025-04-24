@@ -1,4 +1,4 @@
-package com.gpg
+package com.gdg
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
