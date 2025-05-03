@@ -25,6 +25,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("org.springframework.boot:spring-boot-starter-websocket")
 
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

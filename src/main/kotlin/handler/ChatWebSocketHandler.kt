@@ -5,6 +5,7 @@ import com.gdg.service.ChatService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.*
 import org.springframework.web.socket.handler.TextWebSocketHandler
