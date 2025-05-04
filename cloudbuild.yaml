@@ -12,7 +12,7 @@ steps:
         echo "$$SECRET_ENV_CHAT" > src/main/resources/secret.yml
     secretEnv: ['SECRET_ENV_CHAT']
 
-  - name: gradle:7.6-jdk17
+  - name: gradle:7.6-jdk21
     args: [ 'gradle','build' ]
 
   - name: 'gcr.io/cloud-builders/docker'
