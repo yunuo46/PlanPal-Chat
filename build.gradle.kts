@@ -41,6 +41,10 @@ tasks.withType<KotlinJvmCompile>().configureEach {
     }
 }
 
+tasks.getByName<Jar>("jar") {
+    enabled = false
+}
+
 kotlin {
     jvmToolchain(21)
 }
