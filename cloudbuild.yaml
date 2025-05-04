@@ -30,6 +30,7 @@ steps:
       [
         'compute', 'instances', 'create-with-container',
         'planpal-chat-instance-1',
+        '--zone', 'asia-northeast3-a',
         '--container-image', 'asia-northeast3-docker.pkg.dev/gen-lang-client-0798322573/planpal-chat/planpal-chat'
       ]
 
