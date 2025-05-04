@@ -9,7 +9,7 @@ steps:
     args:
       - '-c'
       - |
-        echo "$$SECRET_ENV_CHAT" > src/main/resources/application.yml
+        echo "$$SECRET_ENV_CHAT" > src/main/resources/secret.yml
     secretEnv: ['SECRET_ENV_CHAT']
 
   - name: gradle:7.6-jdk17
