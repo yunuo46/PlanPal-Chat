@@ -8,7 +8,7 @@
 <ul id="log"></ul>
 
 <script>
-    const socket = new WebSocket("ws://10.178.0.9:8080/ws/chat?roomId=testRoom&userId=yunuo");
+    const socket = new WebSocket("wss://10.178.0.9:8080/ws/chat?roomId=testRoom&userId=yunuo");
 
     socket.onopen = () => log("✅ Connected");
     socket.onmessage = (event) => log("📩 " + event.data);
