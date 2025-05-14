@@ -7,9 +7,7 @@ import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.springframework.data.redis.connection.Message
 import org.springframework.data.redis.connection.MessageListener
-import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.listener.ChannelTopic
 import org.springframework.data.redis.listener.RedisMessageListenerContainer
 import org.springframework.stereotype.Component
