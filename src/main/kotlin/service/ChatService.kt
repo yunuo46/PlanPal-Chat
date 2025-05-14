@@ -1,6 +1,6 @@
 package com.gdg.service
 
-import com.gdg.model.ChatMessage
+import com.gdg.domain.ChatMessage
 import com.gdg.repository.ChatMessageRepository
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.springframework.stereotype.Service

@@ -1,6 +1,6 @@
 package com.gdg.repository
 
-import com.gdg.model.ChatMessage
+import com.gdg.domain.ChatMessage
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 import reactor.core.publisher.Flux
 

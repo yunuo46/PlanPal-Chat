@@ -1,49 +1,39 @@
 package com.gdg.handler
 
-import com.gdg.model.ChatMessage
-import com.gdg.service.ChatService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.springframework.context.annotation.ComponentScan
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.gdg.domain.ChatMessage
+import com.gdg.redis.RedisPublisher
+import com.gdg.session.SessionRegistry
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.*
 import org.springframework.web.socket.handler.TextWebSocketHandler
 
 @Component
 class ChatWebSocketHandler(
-    private val chatService: ChatService
+    private val redisPublisher: RedisPublisher,
+    private val sessionRegistry: SessionRegistry,
+    private val objectMapper: ObjectMapper
 ) : TextWebSocketHandler() {
-
-    private val sessions = mutableMapOf<String, MutableList<WebSocketSession>>()
-    private val scope = CoroutineScope(Dispatchers.IO)
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         val roomId = getRoomId(session)
-        sessions.computeIfAbsent(roomId) { mutableListOf() }.add(session)
+        sessionRegistry.add(roomId, session)
+    }
+
+    override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
+        val roomId = getRoomId(session)
+        sessionRegistry.remove(roomId, session)
     }
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
-        val roomId = getRoomId(session)
-        val senderId = getSenderId(session)
-
         val chatMessage = ChatMessage(
-            roomId = roomId,
-            senderId = senderId,
+            roomId = getRoomId(session),
+            senderId = getSenderId(session),
             content = message.payload
         )
 
-        // 비동기 저장
-        scope.launch {
-            chatService.save(chatMessage)
-        }
-
-        // 동기 브로드캐스트
-        sessions[roomId]?.forEach {
-            if (it.isOpen) {
-                it.sendMessage(TextMessage("[${senderId}] ${message.payload}"))
-            }
-        }
+        val json = objectMapper.writeValueAsString(chatMessage)
+        redisPublisher.publish("chat", json)
     }
 
     private fun getRoomId(session: WebSocketSession): String =
