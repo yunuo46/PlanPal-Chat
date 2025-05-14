@@ -1,24 +1,50 @@
-<!-- ws-test.html -->
+<!-- ws-test-toggle.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>WebSocket Test</title></head>
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Test (Local & Remote)</title>
+</head>
 <body>
+<label for="server">🔌 Server:</label>
+<select id="server">
+    <option value="ws://localhost:8080/ws/chat?roomId=testRoom&userId=yunuo">Local (localhost:8000)</option>
+    <option value="wss://35.216.106.89:8080/ws/chat?roomId=testRoom&userId=yunuo">Remote (35.216.106.89)</option>
+</select>
+<button onclick="connect()">Connect</button>
+<br><br>
+
 <input id="msg" type="text" placeholder="Message">
 <button onclick="sendMsg()">Send</button>
 <ul id="log"></ul>
 
 <script>
-    const socket = new WebSocket("wss://35.216.106.89:8080/ws/chat?roomId=testRoom&userId=yunuo");
+    let socket;
 
-    socket.onopen = () => log("✅ Connected");
-    socket.onmessage = (event) => log("📩 " + event.data);
-    socket.onerror = (err) => log("❌ Error: " + err);
-    socket.onclose = () => log("🔌 Closed");
+    function connect() {
+        const url = document.getElementById("server").value;
+
+        if (socket && socket.readyState !== WebSocket.CLOSED) {
+            socket.close();
+            log("🔁 Reconnecting...");
+        }
+
+        socket = new WebSocket(url);
+
+        socket.onopen = () => log("✅ Connected to " + url);
+        socket.onmessage = (event) => log("📩 " + event.data);
+        socket.onerror = (err) => log("❌ Error: " + err.message || err);
+        socket.onclose = () => log("🔌 Connection closed");
+    }
 
     function sendMsg() {
         const msg = document.getElementById("msg").value;
-        socket.send(msg);
-        log("📤 " + msg);
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(msg);
+            log("📤 " + msg);
+        } else {
+            log("⚠️ Not connected");
+        }
     }
 
     function log(message) {
