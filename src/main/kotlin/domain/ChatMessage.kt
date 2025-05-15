@@ -9,5 +9,6 @@ data class ChatMessage(
     val roomId: String,
     val senderId: String,
     val content: String,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
+    val senderSessionId: String
 )

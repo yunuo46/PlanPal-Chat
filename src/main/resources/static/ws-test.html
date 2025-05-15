@@ -6,14 +6,18 @@
     <title>WebSocket Test (Local & Remote)</title>
 </head>
 <body>
+<label for="userId">👤 User ID:</label>
+<input id="userId" type="text" placeholder="Enter userId" value="yunuo">
+
+<br><br>
 <label for="server">🔌 Server:</label>
 <select id="server">
-    <option value="ws://localhost:8080/ws/chat?roomId=testRoom&userId=yunuo">Local (localhost:8000)</option>
-    <option value="wss://plan-pal.shop/ws/chat?roomId=testRoom&userId=yunuo">Remote (35.216.106.89)</option>
+    <option value="ws://localhost:8080">Local (localhost:8080)</option>
+    <option value="wss://plan-pal.shop">Remote (plan-pal.shop)</option>
 </select>
 <button onclick="connect()">Connect</button>
-<br><br>
 
+<br><br>
 <input id="msg" type="text" placeholder="Message">
 <button onclick="sendMsg()">Send</button>
 <ul id="log"></ul>
@@ -22,7 +26,9 @@
     let socket;
 
     function connect() {
-        const url = document.getElementById("server").value;
+        const baseUrl = document.getElementById("server").value;
+        const userId = document.getElementById("userId").value.trim() || "defaultUser";
+        const url = `${baseUrl}/ws/chat?roomId=testRoom&userId=${encodeURIComponent(userId)}`;
 
         if (socket && socket.readyState !== WebSocket.CLOSED) {
             socket.close();
@@ -33,7 +39,7 @@
 
         socket.onopen = () => log("✅ Connected to " + url);
         socket.onmessage = (event) => log("📩 " + event.data);
-        socket.onerror = (err) => log("❌ Error: " + err.message || err);
+        socket.onerror = (err) => log("❌ Error: " + (err.message || err));
         socket.onclose = () => log("🔌 Connection closed");
     }
 

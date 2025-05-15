@@ -26,7 +26,11 @@ class RedisSubscriber(
             CoroutineScope(Dispatchers.IO).launch {
                 val body = String(message.body)
                 val chat = objectMapper.readValue(body, ChatMessage::class.java)
-                sessionRegistry.broadcast(chat.roomId, "[${chat.senderId}] ${chat.content}")
+                sessionRegistry.broadcast(
+                    chat.roomId,
+                    "[${chat.senderId}] ${chat.content}",
+                    excludeSessionId = chat.senderSessionId
+                )
             }
         }
         container.addMessageListener(listener, ChannelTopic("chat"))

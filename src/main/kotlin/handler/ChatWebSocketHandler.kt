@@ -29,7 +29,8 @@ class ChatWebSocketHandler(
         val chatMessage = ChatMessage(
             roomId = getRoomId(session),
             senderId = getSenderId(session),
-            content = message.payload
+            content = message.payload,
+            senderSessionId = session.id
         )
 
         val json = objectMapper.writeValueAsString(chatMessage)

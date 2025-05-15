@@ -17,10 +17,12 @@ class SessionRegistry {
         sessions[roomId]?.remove(session)
     }
 
-    fun broadcast(roomId: String, message: String) {
-        sessions[roomId]?.forEach {
-            if (it.isOpen) {
-                it.sendMessage(TextMessage(message))
+    fun broadcast(roomId: String, message: String, excludeSessionId: String? = null) {
+        val sessions = sessions[roomId] ?: emptyList()
+        for (session in sessions) {
+            if (excludeSessionId != null && session.id == excludeSessionId) continue
+            if (session.isOpen) {
+                session.sendMessage(TextMessage(message))
             }
         }
     }
