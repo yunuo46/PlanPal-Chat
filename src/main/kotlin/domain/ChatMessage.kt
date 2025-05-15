@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 data class ChatMessage(
     @Id val id: String? = null,
     val roomId: String,
-    val senderId: String,
+    val senderName: String,
     val content: String,
     val timestamp: Long = System.currentTimeMillis(),
     val senderSessionId: String

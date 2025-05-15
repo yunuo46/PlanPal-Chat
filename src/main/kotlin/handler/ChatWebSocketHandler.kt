@@ -26,20 +26,43 @@ class ChatWebSocketHandler(
     }
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
-        val chatMessage = ChatMessage(
-            roomId = getRoomId(session),
-            senderId = getSenderId(session),
-            content = message.payload,
-            senderSessionId = session.id
-        )
+        val json = objectMapper.readTree(message.payload)
+        val type = json["type"]?.asText()
+        val text = json["text"]?.asText() ?: ""
 
-        val json = objectMapper.writeValueAsString(chatMessage)
-        redisPublisher.publish("chat", json)
+        val roomId = getRoomId(session)
+        val senderName = getSenderName(session)
+        val sessionId = session.id
+
+        when (type) {
+            "chat" -> {
+                val chatMessage = ChatMessage(
+                    roomId = roomId,
+                    senderName = senderName,
+                    content = text,
+                    senderSessionId = sessionId
+                )
+                val payload = objectMapper.writeValueAsString(chatMessage)
+                redisPublisher.publish("chat", payload)
+            }
+            "ai" -> {
+                // AI 백엔드에 전달하는 로직 작성
+            }
+            "refreshMap" -> {
+                // To Do
+            }
+            "refreshSchedule" -> {
+                // To Do
+            }
+            else -> {
+                session.sendMessage(TextMessage("""{"type":"error","message":"Unknown type"}"""))
+            }
+        }
     }
 
     private fun getRoomId(session: WebSocketSession): String =
         session.uri?.query?.split("&")?.find { it.startsWith("roomId=") }?.substringAfter("=") ?: "default"
 
-    private fun getSenderId(session: WebSocketSession): String =
-        session.uri?.query?.split("&")?.find { it.startsWith("userId=") }?.substringAfter("=") ?: "anonymous"
+    private fun getSenderName(session: WebSocketSession): String =
+        session.uri?.query?.split("&")?.find { it.startsWith("userName=") }?.substringAfter("=") ?: "anonymous"
 }

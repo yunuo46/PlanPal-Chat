@@ -1,4 +1,3 @@
-<!-- ws-test-toggle.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +18,8 @@
 
 <br><br>
 <input id="msg" type="text" placeholder="Message">
-<button onclick="sendMsg()">Send</button>
+<button onclick="sendMsg('chat')">Send</button>
+<button onclick="sendMsg('ai')">AI</button>
 <ul id="log"></ul>
 
 <script>
@@ -28,7 +28,7 @@
     function connect() {
         const baseUrl = document.getElementById("server").value;
         const userId = document.getElementById("userId").value.trim() || "defaultUser";
-        const url = `${baseUrl}/ws/chat?roomId=testRoom&userId=${encodeURIComponent(userId)}`;
+        const url = `${baseUrl}/ws/chat?roomId=testRoom&userName=${encodeURIComponent(userId)}`;
 
         if (socket && socket.readyState !== WebSocket.CLOSED) {
             socket.close();
@@ -43,11 +43,18 @@
         socket.onclose = () => log("🔌 Connection closed");
     }
 
-    function sendMsg() {
+    function sendMsg(type) {
         const msg = document.getElementById("msg").value;
+        if (!msg.trim()) return;
+
+        const payload = {
+            type: type,
+            text: msg
+        };
+
         if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send(msg);
-            log("📤 " + msg);
+            socket.send(JSON.stringify(payload));
+            log(`📤 (${type}) ${msg}`);
         } else {
             log("⚠️ Not connected");
         }
