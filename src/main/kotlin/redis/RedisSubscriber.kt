@@ -28,7 +28,7 @@ class RedisSubscriber(
                 val chat = objectMapper.readValue(body, ChatMessage::class.java)
                 sessionRegistry.broadcast(
                     chat.roomId,
-                    "[${chat.senderName}] ${chat.content}",
+                    """{"type":"chat","text":"[${chat.senderName}] ${chat.content}"}""",
                     excludeSessionId = chat.senderSessionId
                 )
             }

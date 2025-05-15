@@ -20,6 +20,10 @@ class ChatWebSocketHandler(
     override fun afterConnectionEstablished(session: WebSocketSession) {
         val roomId = getRoomId(session)
         sessionRegistry.add(roomId, session)
+
+        val senderName = getSenderName(session)
+        val joinMsg = """{"type":"chat","text":"$senderName 님이 입장하셨습니다."}"""
+        sessionRegistry.broadcast(roomId, joinMsg)
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
@@ -51,7 +55,10 @@ class ChatWebSocketHandler(
                 // AI 백엔드에 전달하는 로직 작성
             }
             "refreshMap", "refreshSchedule" -> {
-                // 프론트에 refresh 요청 보내는 로직 작성(소켓으로)
+                val broadcastPayload = objectMapper.writeValueAsString(
+                    mapOf("type" to type)
+                )
+                sessionRegistry.broadcast(roomId, broadcastPayload, excludeSessionId = sessionId)
             }
             else -> {
                 session.sendMessage(TextMessage("""{"type":"error","message":"Unknown type"}"""))
