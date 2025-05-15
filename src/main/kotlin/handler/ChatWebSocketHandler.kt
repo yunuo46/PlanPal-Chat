@@ -2,6 +2,7 @@ package com.gdg.handler
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.gdg.domain.ChatMessage
+import com.gdg.infra.ApiClient
 import com.gdg.redis.RedisPublisher
 import com.gdg.session.SessionRegistry
 import org.springframework.stereotype.Component
@@ -12,7 +13,8 @@ import org.springframework.web.socket.handler.TextWebSocketHandler
 class ChatWebSocketHandler(
     private val redisPublisher: RedisPublisher,
     private val sessionRegistry: SessionRegistry,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val apiClient: ApiClient
 ) : TextWebSocketHandler() {
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
@@ -48,11 +50,8 @@ class ChatWebSocketHandler(
             "ai" -> {
                 // AI 백엔드에 전달하는 로직 작성
             }
-            "refreshMap" -> {
-                // To Do
-            }
-            "refreshSchedule" -> {
-                // To Do
+            "refreshMap", "refreshSchedule" -> {
+                // 프론트에 refresh 요청 보내는 로직 작성(소켓으로)
             }
             else -> {
                 session.sendMessage(TextMessage("""{"type":"error","message":"Unknown type"}"""))
