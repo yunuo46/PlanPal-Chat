@@ -1,5 +1,6 @@
 package com.gdg.session
 
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
@@ -7,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Component
 class SessionRegistry {
+    private val logger = LoggerFactory.getLogger(SessionRegistry::class.java)
     private val sessions = ConcurrentHashMap<String, MutableList<WebSocketSession>>()
 
     fun add(roomId: String, session: WebSocketSession) {
@@ -25,12 +27,17 @@ class SessionRegistry {
             val session = iterator.next()
 
             if (!session.isOpen) {
-                println("INFO: Remove invalid session in room $roomId (sessionId=${session?.id})")
+                logger.info("Closed session removed: roomId=$roomId, sessionId=${session.id}")
                 iterator.remove()
                 continue
             }
             if (excludeSessionId != null && session.id == excludeSessionId) continue
-            session.sendMessage(TextMessage(message))
+            try {
+                session.sendMessage(TextMessage(message))
+                logger.debug("Message sent to sessionId=${session.id} in room $roomId")
+            } catch (e: Exception) {
+                logger.error("Failed to send message to sessionId=${session.id} in room $roomId", e)
+            }
         }
     }
 }
