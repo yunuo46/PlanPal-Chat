@@ -2,6 +2,7 @@ package com.gdg.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.gdg.domain.ChatMessage
+import com.gdg.dto.chat.ChatResponse
 import com.gdg.session.SessionRegistry
 import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.CoroutineScope
@@ -21,17 +22,25 @@ class RedisSubscriber(
 
     @PostConstruct
     fun subscribe() {
-        val listener = MessageListener { message, _ ->
+        val chatListener = MessageListener { message, _ ->
             CoroutineScope(Dispatchers.IO).launch {
                 val body = String(message.body)
                 val chat = objectMapper.readValue(body, ChatMessage::class.java)
+
+                val response = ChatResponse(
+                    senderName = chat.senderName,
+                    text = chat.content,
+                    timestamp = chat.timestamp
+                )
+                val payload = objectMapper.writeValueAsString(response)
+
                 sessionRegistry.broadcast(
                     chat.roomId,
-                    """{"type":"chat","text":"[${chat.senderName}] ${chat.content}"}""",
+                    payload,
                     excludeSessionId = chat.senderSessionId
                 )
             }
         }
-        container.addMessageListener(listener, ChannelTopic("chat"))
+        container.addMessageListener(chatListener, ChannelTopic("chat"))
     }
 }
