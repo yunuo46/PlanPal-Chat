@@ -27,10 +27,10 @@ class RedisSubscriber(
                 val body = String(message.body)
                 val chat = objectMapper.readValue(body, ChatMessage::class.java)
 
-                val response = ChatResponse(
-                    senderName = chat.senderName,
-                    text = chat.content,
-                    timestamp = chat.timestamp
+                val response = ChatResponse.from(
+                    chat.senderName,
+                    chat.content,
+                    chat.timestamp
                 )
                 val payload = objectMapper.writeValueAsString(response)
 
