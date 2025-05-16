@@ -33,6 +33,7 @@ class SessionRegistry {
             }
             if (excludeSessionId != null && session.id == excludeSessionId) continue
             try {
+                println(">>> Redis SUBSCRIBE: received message=$message")
                 session.sendMessage(TextMessage(message))
                 logger.debug("Message sent to sessionId=${session.id} in room $roomId")
             } catch (e: Exception) {

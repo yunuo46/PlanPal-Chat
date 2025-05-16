@@ -22,7 +22,6 @@ class RedisSubscriber(
     @PostConstruct
     fun subscribe() {
         val listener = MessageListener { message, _ ->
-            println(">>> Redis SUBSCRIBE: received message=${String(message.body)}")
             CoroutineScope(Dispatchers.IO).launch {
                 val body = String(message.body)
                 val chat = objectMapper.readValue(body, ChatMessage::class.java)
