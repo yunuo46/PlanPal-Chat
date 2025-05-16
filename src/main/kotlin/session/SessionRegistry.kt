@@ -5,14 +5,15 @@ import org.springframework.stereotype.Component
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 @Component
 class SessionRegistry {
     private val logger = LoggerFactory.getLogger(SessionRegistry::class.java)
-    private val sessions = ConcurrentHashMap<String, MutableList<WebSocketSession>>()
+    private val sessions = ConcurrentHashMap<String, CopyOnWriteArrayList<WebSocketSession>>()
 
     fun add(roomId: String, session: WebSocketSession) {
-        sessions.computeIfAbsent(roomId) { mutableListOf() }.add(session)
+        sessions.computeIfAbsent(roomId) { CopyOnWriteArrayList() }.add(session)
     }
 
     fun remove(roomId: String, session: WebSocketSession) {
