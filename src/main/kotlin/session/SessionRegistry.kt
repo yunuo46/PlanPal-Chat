@@ -18,12 +18,19 @@ class SessionRegistry {
     }
 
     fun broadcast(roomId: String, message: String, excludeSessionId: String? = null) {
-        val sessions = sessions[roomId] ?: emptyList()
-        for (session in sessions) {
-            if (excludeSessionId != null && session.id == excludeSessionId) continue
-            if (session.isOpen) {
-                session.sendMessage(TextMessage(message))
+        val sessionList = sessions[roomId] ?: return
+
+        val iterator = sessionList.iterator()
+        while (iterator.hasNext()) {
+            val session = iterator.next()
+
+            if (!session.isOpen) {
+                println("INFO: Remove invalid session in room $roomId (sessionId=${session?.id})")
+                iterator.remove()
+                continue
             }
+            if (excludeSessionId != null && session.id == excludeSessionId) continue
+            session.sendMessage(TextMessage(message))
         }
     }
 }
