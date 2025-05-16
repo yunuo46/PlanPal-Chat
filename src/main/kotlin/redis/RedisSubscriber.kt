@@ -41,6 +41,39 @@ class RedisSubscriber(
                 )
             }
         }
+
+        val refreshMapListener = MessageListener { message, _ ->
+            CoroutineScope(Dispatchers.IO).launch {
+                val body = String(message.body)
+                val request = objectMapper.readTree(body)
+                val roomId = request["roomId"].asText()
+                val excludeSessionId = request["excludeSessionId"]?.asText()
+
+                val payload = objectMapper.writeValueAsString(
+                    mapOf("type" to "refreshMap")
+                )
+
+                sessionRegistry.broadcast(roomId, payload, excludeSessionId)
+            }
+        }
+
+        val refreshScheduleListener = MessageListener { message, _ ->
+            CoroutineScope(Dispatchers.IO).launch {
+                val body = String(message.body)
+                val request = objectMapper.readTree(body)
+                val roomId = request["roomId"].asText()
+                val excludeSessionId = request["excludeSessionId"]?.asText()
+
+                val payload = objectMapper.writeValueAsString(
+                    mapOf("type" to "refreshSchedule")
+                )
+
+                sessionRegistry.broadcast(roomId, payload, excludeSessionId)
+            }
+        }
+
+        container.addMessageListener(refreshMapListener, ChannelTopic("refresh-map"))
+        container.addMessageListener(refreshScheduleListener, ChannelTopic("refresh-schedule"))
         container.addMessageListener(chatListener, ChannelTopic("chat"))
     }
 }

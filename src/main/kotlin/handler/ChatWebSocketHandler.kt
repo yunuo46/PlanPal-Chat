@@ -73,10 +73,12 @@ class ChatWebSocketHandler(
                     // AI 백엔드 로직
                 }
                 "refreshMap", "refreshSchedule" -> {
-                    val broadcastPayload = objectMapper.writeValueAsString(
-                        mapOf("type" to type)
+                    val request = mapOf(
+                        "roomId" to roomId,
+                        "excludeSessionId" to sessionId
                     )
-                    sessionRegistry.broadcast(roomId, broadcastPayload, excludeSessionId = sessionId)
+                    val payload = objectMapper.writeValueAsString(request)
+                    redisPublisher.publish(typeToTopic(type), payload)
                 }
                 else -> {
                     logger.warn("Unknown message type received: $type")
@@ -94,4 +96,10 @@ class ChatWebSocketHandler(
 
     private fun getSenderName(session: WebSocketSession): String? =
         session.uri?.query?.split("&")?.find { it.startsWith("userName=") }?.substringAfter("=")
+
+    private fun typeToTopic(type: String) = when (type) {
+        "refreshMap" -> "refresh-map"
+        "refreshSchedule" -> "refresh-schedule"
+        else -> error("Unknown type: $type")
+    }
 }
