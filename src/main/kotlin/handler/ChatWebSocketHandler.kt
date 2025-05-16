@@ -54,7 +54,7 @@ class ChatWebSocketHandler(
 
             if (roomId == null || senderName == null) {
                 logger.warn("Invalid session data: roomId or userName missing.")
-                session.sendMessage(TextMessage("""{"type":"error","message":"Invalid session data"}"""))
+                session.sendMessage(TextMessage("""{"type":"error","text":"Invalid session data"}"""))
                 return
             }
 
@@ -63,7 +63,7 @@ class ChatWebSocketHandler(
                     val chatMessage = ChatMessage(
                         roomId = roomId,
                         senderName = senderName,
-                        content = text,
+                        text = text,
                         senderSessionId = sessionId
                     )
                     val payload = objectMapper.writeValueAsString(chatMessage)
@@ -78,7 +78,7 @@ class ChatWebSocketHandler(
                         "excludeSessionId" to sessionId
                     )
                     val payload = objectMapper.writeValueAsString(request)
-                    redisPublisher.publish(typeToTopic(type), payload)
+                    redisPublisher.publish(type, payload)
                 }
                 else -> {
                     logger.warn("Unknown message type received: $type")
@@ -87,7 +87,7 @@ class ChatWebSocketHandler(
             }
         } catch (e: Exception) {
             logger.error("Error handling message: ${e.message}", e)
-            session.sendMessage(TextMessage("""{"type":"error","message":"Invalid message format"}"""))
+            session.sendMessage(TextMessage("""{"type":"error","text":"Invalid message format"}"""))
         }
     }
 
@@ -96,10 +96,4 @@ class ChatWebSocketHandler(
 
     private fun getSenderName(session: WebSocketSession): String? =
         session.uri?.query?.split("&")?.find { it.startsWith("userName=") }?.substringAfter("=")
-
-    private fun typeToTopic(type: String) = when (type) {
-        "refreshMap" -> "refresh-map"
-        "refreshSchedule" -> "refresh-schedule"
-        else -> error("Unknown type: $type")
-    }
 }

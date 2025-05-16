@@ -29,7 +29,7 @@ class RedisSubscriber(
 
                 val response = ChatResponse.from(
                     chat.senderName,
-                    chat.content,
+                    chat.text,
                     chat.timestamp
                 )
                 val payload = objectMapper.writeValueAsString(response)
@@ -72,8 +72,8 @@ class RedisSubscriber(
             }
         }
 
-        container.addMessageListener(refreshMapListener, ChannelTopic("refresh-map"))
-        container.addMessageListener(refreshScheduleListener, ChannelTopic("refresh-schedule"))
+        container.addMessageListener(refreshMapListener, ChannelTopic("refreshMap"))
+        container.addMessageListener(refreshScheduleListener, ChannelTopic("refreshSchedule"))
         container.addMessageListener(chatListener, ChannelTopic("chat"))
     }
 }
